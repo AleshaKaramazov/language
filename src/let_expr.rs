@@ -1,7 +1,3 @@
-use std::{
-    fmt, io::Write
-};
-
 use crate::type_expr::type_name;
 
 
@@ -34,12 +30,13 @@ pub fn parse_let_func(text: &str) -> String {
                     = expr.trim().split_once('!') 
                     && command.starts_with("считать") {
                 answer.push_str(";");
-                answer.push_str(&format!("\n\
-                    \t{{\n\
+                answer.push_str(&format!("\n\t{{\n\
                         \t\tprint!{};\n\
                         \t\tio::stdout().flush()?;\n\
                         \t\tlet mut for_read = String::new();\n\
-                        \t\tio::stdin().read_line(&mut for_read)?;\n\
+                        \t\tio::stdin().read_line(&mut for_read)?;\n", expr));
+                if typed != "String" {
+                    answer.push_str(&format!("\n\
                         \t\t{} = match for_read.trim().parse::<{}>() {{\n\
                         \t\t\tOk(res) => res,\n\
                         \t\t\tErr(e) => {{\n\
@@ -47,7 +44,11 @@ pub fn parse_let_func(text: &str) -> String {
                         \t\t\t\treturn Ok(());\n\
                         \t\t\t}},\n\
                         \t\t}}\n\
-                    \t}}", expr, per_name, typed, typed));
+                    \t}}", per_name, typed, typed));
+                } else {
+                    answer.push_str(
+                        &format!("\t\t{} = for_read;", per_name));
+                }
             } else {
                 answer.push_str("= ");
                 answer.push_str(expr);
