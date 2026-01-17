@@ -78,7 +78,7 @@ def main():
             if not user_input:
                 continue
             
-            out.write(f"## Пользователь(Вы): \n");
+            out.write("## Пользователь(Вы): \n");
             out.write(user_input + "\n");
             out.write("- - -\n")
             out.flush()

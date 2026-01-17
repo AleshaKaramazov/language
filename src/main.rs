@@ -3,16 +3,12 @@ mod let_expr;
 mod type_expr;
 mod if_expr;
 mod write_expr;
+mod loop_expr;
+use loop_expr::parse_loop_expr;
 use write_expr::parse_write_expr;
 use if_expr::parse_if_expr;
 use let_expr::parse_let_expr;
 
-pub enum ExprType {
-    Let,
-    If,
-    Loop,
-    Func
-}
 
 fn parse_expr(line: &str, mut end_depth: i32, output: &mut File) -> io::Result<i32> {
     if line.starts_with("Алгоритм") {
@@ -40,8 +36,12 @@ fn parse_expr(line: &str, mut end_depth: i32, output: &mut File) -> io::Result<i
         writeln!(output, "{}", parse_let_expr(line))?;
     } else if line.starts_with("если") || line.starts_with("иначе") {
         writeln!(output, "{}", parse_if_expr(line))?;
-    } else if line.starts_with("написать") {
+    } else if line.starts_with("написать") || line.starts_with("вывести") {
         writeln!(output, "{}", parse_write_expr(line))?;
+    } else if line.starts_with("пока") || line.starts_with("для") {
+        writeln!(output, "{}", parse_loop_expr(line))?;
+    } else {
+        writeln!(output, "{}", line)?;
     }
     Ok(end_depth) 
 }
