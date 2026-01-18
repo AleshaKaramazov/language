@@ -31,21 +31,7 @@ pub fn parse_let_expr(text: &str) -> String {
                     = expr.trim().split_once('!') 
                     && command.starts_with("считать") {
                 answer.push_str(";");
-                answer.push_str(&format!("\n\t{{\n\
-                        print!{};\n\
-                        io::stdout().flush()?;\n\
-                        let mut for_read = String::new();\n\
-                        io::stdin().read_line(&mut for_read)?;\n", expr));
-                if typed != "String" && !typed.is_empty() {
-                    answer.push_str(&format!("\n\
-                        {} = match for_read.trim().parse::<{}>() {{\n\
-                        Ok(res) => res,\n\
-                        Err(e) => {{\n\
-                        eprintln!(\"ошибка перевода в {}\");\n\
-                        return Ok(());\n\
-                        }},\n\
-                        }}\n\
-                    }}", per_name, typed, typed));
+                answer.push_str(&format!("{} = read_console::<{}>{};\n", per_name, typed, expr));
                 } else {
                     answer.push_str(
                         &format!("\t\t{} = for_read;\n\t}}\n", per_name));
@@ -55,7 +41,6 @@ pub fn parse_let_expr(text: &str) -> String {
                 answer.push_str(expr);
             }
         }
-    }
     answer
 }
 

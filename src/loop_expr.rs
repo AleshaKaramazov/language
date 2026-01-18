@@ -1,13 +1,21 @@
 
-pub fn parse_loop_expr(text: &str) -> String {
+pub fn parse_loop_expr(text: &str) -> (String, bool) {
     let mut answer = String::new();
+    let mut retur = false;
     if let Some((loop_type, expr)) = text.split_once(' '){
         if loop_type.starts_with("пока") {
             answer.push_str("while ");
             if answer.contains("Правда") {
                 answer.push_str("true");
             } else {
-                answer.push_str(expr);
+                if let Some(expr) = expr.strip_suffix("выполнить") {
+                    retur = true;
+                    answer.push_str(expr);
+                    answer.push('{');
+                }
+                else {
+                    answer.push_str(expr);
+                }
             }
         } else if loop_type.starts_with("для") {
             answer.push_str("for ");
@@ -16,14 +24,20 @@ pub fn parse_loop_expr(text: &str) -> String {
                     answer.push_str(name);
                 }
                 answer.push_str(" in ");
-                if let Some((_, diap)) = diap.trim().split_once('(') 
-                    && let Some(diap) = diap.strip_suffix(')') {
+                if let Some(diap) = diap.strip_suffix(") выполнить") {
+                    retur = true;
+                    if let Some((_, diap)) = diap.split_once('(') {
                         answer.push_str(diap);
                     }
+                    answer.push('{')
+                } 
+                else if let Some((_, diap)) = diap.trim().split_once('(') 
+                    && let Some(diap) = diap.strip_suffix(')') {
+                        answer.push_str(diap);
+                }
             }
                  
         }
     }
-     
-    answer
+    (answer, retur) 
 }

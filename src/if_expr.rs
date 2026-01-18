@@ -1,5 +1,5 @@
 
-pub fn parse_if_expr(text: &str) -> String {
+pub fn parse_if_expr(text: &str) -> (String, bool) {
     let mut answer = String::new();
     if let Some((_, predicate)) = text.split_once(' ') {
         if predicate.starts_with("если") { 
@@ -15,6 +15,12 @@ pub fn parse_if_expr(text: &str) -> String {
     } else {
         answer.push_str("\telse");
     }
-    answer
+    if let Some(text) = answer.strip_suffix("то") {
+        answer = text.to_string();
+        answer.push('{');
+        (answer, true)
+    } else {
+        (answer, false)
+    }
 }
 
